@@ -1,0 +1,14 @@
+# Ignorar binarios de Java
+*.class
+bin/
+*.jar
+
+# Ignorar configuraciones de VS Code
+.vscode/
+.project
+.classpath
+.settings/
+
+# Ignorar archivos del sistema
+.DS_Store
+Thumbs.db
