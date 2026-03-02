@@ -19,7 +19,6 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 
 ## UML resolucion de problema clinica_turnos
 
-
 classDiagram
     class TipoPaciente {
         <<enumeration>>
@@ -32,23 +31,36 @@ classDiagram
     class Paciente {
         -String id
         -String ticket
-        -LocalTime hora
+        -LocalTime horaSolicitud
         -boolean atendido
         +getTicket() String
-        +getId() String
-        +getHoraFormateada() String
-        +isAtendido() boolean
-        +setAtendido(boolean)
+        +actualizarEstado(bool)
     }
 
-    class AppClinica {
-        -List~Paciente~ pacientes
-        -int contadorTurno
-        -DefaultTableModel modeloTabla
-        +AppClinica()
-        -actualizarTabla()
+    class ITurnoService {
+        <<Interface>>
+        +registrarTurno(String id, TipoPaciente tipo)
+        +cancelarTurno(String ticket)
+        +obtenerSiguientes() List
+    }
+
+    class TurnoServiceImpl {
+        -List~Paciente~ repositorio
+        -int contadorGlobal
+        +atenderPaciente()
+    }
+
+    class AppClinicaGUI {
+        -TurnoServiceImpl service
+        -DefaultTableModel tablaModel
+        +renderizarTabla()
         +main(String[] args)
     }
 
-    Paciente o-- TipoPaciente : usa
-    AppClinica "1" -- "*" Paciente : gestiona
+    %% Relaciones
+    ITurnoService <|.. TurnoServiceImpl
+    AppClinicaGUI --> ITurnoService : usa
+    TurnoServiceImpl "1" *-- "*" Paciente : contiene
+    Paciente --> TipoPaciente : clasificado por
+
+    note for Paciente "El ticket se genera como \nPrefijo + Contador (ej: M-102)"
