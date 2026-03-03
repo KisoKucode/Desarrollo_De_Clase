@@ -1,0 +1,10 @@
+src/modelos /modelos/Ave.java
+src/modelos /modelos/AvesTruz.java
+src/modelos /modelos/Canario.java
+src/modelos /modelos/Main.java
+src/supertypeim/VueloConAlas.java
+src/supertypeim/SinVuelo.java
+src/supertypeim/SinCanto.java
+src/supertypeim/Canto.java
+src/supertype/TipoVuelo.java
+src/supertype/TipoSonido.java

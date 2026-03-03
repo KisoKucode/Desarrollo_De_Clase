@@ -1,6 +1,6 @@
 package modelos;
-import supertypeimp.SinVuelo;
-import supertypeimp.SinCanto;
+import supertypeim.SinVuelo;
+import supertypeim.SinCanto;
 
 public class AvesTruz extends Ave {
     public AvesTruz() {

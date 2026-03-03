@@ -1,0 +1,80 @@
+@startuml
+' Pollos - Diagrama de clases (UML 2.5)
+package modelos {
+  abstract class Ave {
+    - miFormaDeVuelo: TipoVuelo
+    - miFormaDeCanto: TipoSonido
+    + realizarVuelo(): void
+    + realizarSonido(): void
+  }
+
+  class Canario
+  class AvesTruz
+
+  class Main {
+    + main(args: String[]): void
+  }
+}
+
+package supertype {
+  interface TipoVuelo {
+    + vuelo(): void
+  }
+
+  interface TipoSonido {
+    + makeSound(): void
+  }
+}
+
+package supertypeim {
+  class VueloConAlas {
+    + vuelo(): void
+  }
+
+  class SinVuelo {
+    + vuelo(): void
+  }
+
+  class Canto {
+    + makeSound(): void
+  }
+
+  class SinCanto {
+    + makeSound(): void
+  }
+}
+
+' Relaciones
+Ave <|-- Canario
+Ave <|-- AvesTruz
+
+' Implementaciones de estrategia (Strategy pattern)
+VueloConAlas ..|> TipoVuelo
+SinVuelo ..|> TipoVuelo
+Canto ..|> TipoSonido
+SinCanto ..|> TipoSonido
+
+' Uso / dependencia
+Canario ..> VueloConAlas : usa
+Canario ..> Canto : usa
+AvesTruz ..> SinVuelo : usa
+AvesTruz ..> SinCanto : usa
+
+' Agregación de comportamiento
+Ave o-- TipoVuelo : tiene
+Ave o-- TipoSonido : tiene
+
+Main ..> Ave
+
+note bottom of Ave
+  `miFormaDeVuelo` y `miFormaDeCanto` son objetos que implementan
+  las interfaces `TipoVuelo` y `TipoSonido` respectivamente.
+end note
+
+note right
+  Este diagrama refleja la implementación en `src/`:
+  - `modelos/Ave`, `modelos/Canario`, `modelos/AvesTruz`
+  - `supertype/TipoVuelo`, `supertype/TipoSonido`
+  - `supertypeim/*` implementaciones concretas
+end note
+@enduml

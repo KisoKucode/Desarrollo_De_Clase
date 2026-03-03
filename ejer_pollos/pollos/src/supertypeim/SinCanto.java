@@ -1,4 +1,4 @@
-package supertypeimp;
+package supertypeim;
 import supertype.TipoSonido;
 
 public class SinCanto implements TipoSonido {

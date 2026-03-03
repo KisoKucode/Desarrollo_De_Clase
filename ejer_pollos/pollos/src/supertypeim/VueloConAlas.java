@@ -1,4 +1,4 @@
-package supertypeimp;
+package supertypeim;
 import supertype.TipoVuelo;
 
 public class VueloConAlas implements TipoVuelo {
