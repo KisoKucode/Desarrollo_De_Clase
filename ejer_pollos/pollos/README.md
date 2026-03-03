@@ -1,34 +1,68 @@
-## Getting Started
+## uml pollos
+```mermaidSS
+classDiagram
+    %% Definición de Paquetes y Clases
+    class Ave {
+        <<abstract>>
+        -TipoVuelo miFormaDeVuelo
+        -TipoSonido miFormaDeCanto
+        +realizarVuelo() void
+        +realizarSonido() void
+    }
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+    class Canario
+    class AvesTruz
 
-## Folder Structure
+    class Main {
+        +main(args: String[]) void
+    }
 
-The workspace contains two folders by default, where:
+    class TipoVuelo {
+        <<interface>>
+        +vuelo() void
+    }
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+    class TipoSonido {
+        <<interface>>
+        +makeSound() void
+    }
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+    class VueloConAlas {
+        +vuelo() void
+    }
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+    class SinVuelo {
+        +vuelo() void
+    }
 
-## Dependency Management
+    class Canto {
+        +makeSound() void
+    }
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+    class SinCanto {
+        +makeSound() void
+    }
 
-## Diagrama de clases (UML)
+    %% Relaciones de Herencia
+    Ave <|-- Canario
+    Ave <|-- AvesTruz
 
-He incluido un diagrama de clases PlantUML que representa la estructura del ejercicio "pollos" (herencia, interfaces y patrón strategy para vuelo/sonido).
+    %% Implementaciones de Interfaz
+    TipoVuelo <|.. VueloConAlas
+    TipoVuelo <|.. SinVuelo
+    TipoSonido <|.. Canto
+    TipoSonido <|.. SinCanto
 
-- Archivo PlantUML: `uml/pollos.puml`
+    %% Agregación (Strategy Pattern)
+    Ave o-- TipoVuelo : tiene
+    Ave o-- TipoSonido : tiene
 
-Para renderizarlo localmente puedes usar PlantUML (o extensiones de VS Code). Copia el contenido de `uml/pollos.puml` y pégalo en tu herramienta PlantUML, o usa:
+    %% Dependencias
+    Main ..> Ave
+    Canario ..> VueloConAlas : usa
+    Canario ..> Canto : usa
+    AvesTruz ..> SinVuelo : usa
+    AvesTruz ..> SinCanto : usa
 
-```bash
-# desde la raíz del proyecto 'ejer_pollos/pollos'
-plantuml uml/pollos.puml
-```
-
-También aquí tienes el código PlantUML incluido en el repositorio: [uml/pollos.puml](uml/pollos.puml)
-
+    %% Notas (Mermaid no soporta notas flotantes como PlantUML, 
+    %% se suelen representar como comentarios o texto externo)
