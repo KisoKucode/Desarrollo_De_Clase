@@ -1,5 +1,5 @@
 ## uml pollos
-```mermaidS
+```mermaid
 classDiagram
     %% Definición de Paquetes y Clases
     class Ave {
