@@ -11,6 +11,8 @@ public class OrdenCompra {
     private EstadoOrden estado;
     private List<ItemOrden> items = new ArrayList<>();
     private MetodoPago metodoPago;
+    private boolean empacado = false;
+    private String transportista = null;
 
     public OrdenCompra(String codigo, Date fecha, MetodoPago metodoPago) {
         this.codigo = codigo;
@@ -52,4 +54,10 @@ public class OrdenCompra {
             System.out.println("Orden " + codigo + " cancelada.");
         }
     }
+
+    public boolean isEmpacado() { return empacado; }
+    public void marcarEmpacado() { this.empacado = true; }
+
+    public String getTransportista() { return transportista; }
+    public void asignarTransportista(String transportista) { this.transportista = transportista; }
 }

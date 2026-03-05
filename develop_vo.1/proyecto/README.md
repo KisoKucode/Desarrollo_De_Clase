@@ -24,76 +24,141 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 
 ```mermaid
 classDiagram
+    %% Usuarios
     class Usuario {
-        <<Abstract>>
-        -String nombre
-        -String email
-        +autenticar()
+      <<Abstract>>
+      -String nombre
+      -String email
+      +autenticar()
     }
-
     class Cliente
     class AgenteDeposito
     class GerenteRelaciones
-
     Usuario <|-- Cliente
     Usuario <|-- AgenteDeposito
     Usuario <|-- GerenteRelaciones
 
+    %% Modelos
     class Producto {
-        -String codigo
-        -String descripcion
-        -double precio
+      -String codigo
+      -String descripcion
+      -double precio
     }
 
     class ItemOrden {
-        -int cantidad
-        -double precioUnitario
+      -int cantidad
+      -double precioUnitario
+      +getCantidad(): int
+      +getPrecioUnitario(): double
     }
 
     class OrdenCompra {
-        -String codigo
-        -Date fecha
-        -EstadoOrden estado
-        +calcularTotal()
-        +confirmar()
-        +cancelar()
+      -String codigo
+      -Date fecha
+      -EstadoOrden estado
+      -boolean empacado
+      -String transportista
+      +calcularTotal(): double
+      +confirmar(): void
+      +cancelar(): void
+      +marcarEmpacado(): void
+      +asignarTransportista(String): void
     }
 
     class Queja {
-        -String motivo
-        -Date fecha
+      -String motivo
+      -Date fecha
     }
 
-    class MetodoPago {
-        <<Interface>>
-        +procesarPago(monto)
+    class EstadoOrden {
+      <<enumeration>>
+      PENDIENTE
+      CONFIRMADA
+      CANCELADA
     }
 
-    class PagoTarjetaCredito
-
-    MetodoPago <|.. PagoTarjetaCredito
-    OrdenCompra --> MetodoPago
-
-    class ISistemaInventario {
-        <<Interface>>
-        +consultarStock(codigo)
-        +actualizarStock(codigo, cantidad)
-    }
-
-    class OrdenService
-    class QuejaService
-    class CatalogoService
-
-    OrdenService --> ISistemaInventario
-    OrdenService --> MetodoPago
-    QuejaService --> GerenteRelaciones
-
-    Cliente --> OrdenService
-    Cliente --> QuejaService
-    Cliente --> CatalogoService
-
-    OrdenCompra "1" *-- "1..*" ItemOrden
-    ItemOrden "*" --> "1" Producto
+    %% Relacion de composición y asociaciones
+    OrdenCompra "1" *-- "1..*" ItemOrden : contiene
+    ItemOrden "*" --> "1" Producto : refiere
     Cliente "1" --> "*" OrdenCompra
     Cliente "1" --> "*" Queja
-```
+    Queja --> GerenteRelaciones : remitida a
+
+    note right of OrdenCompra
+      El ticket/orden incluye items; al confirmar se actualiza stock,
+      se puede marcar empacado y asignar transportista.
+    end note
+
+    %% Pagos e inventario (interfaces y impls)
+    class MetodoPago {
+      <<interface>>
+      +procesarPago(monto: double)
+    }
+    class PagoTarjetaCredito {
+      +procesarPago(monto: double)
+    }
+    MetodoPago <|.. PagoTarjetaCredito
+
+    class ISistemaInventario {
+      <<interface>>
+      +consultarStock(codigo: String): int
+      +actualizarStock(codigo: String, cantidad: int)
+    }
+    class InMemoryInventario
+    ISistemaInventario <|.. InMemoryInventario
+
+    %% Servicios y adaptadores
+    class IOrdenService {
+      <<interface>>
+      +crearOrden(orden: OrdenCompra)
+      +confirmarOrden(codigo: String)
+      +cancelarOrden(codigo: String)
+    }
+    class OrdenService {
+      -ISistemaInventario inventario
+      -MetodoPago metodoPago
+      +procesarOrden(orden: OrdenCompra)
+      +obtenerOrdenesConfirmadas(): List~OrdenCompra~
+      +marcarEmpacado(orden: OrdenCompra)
+      +asignarTransportista(orden: OrdenCompra, transportista: String)
+      +cancelarOrden(orden: OrdenCompra)
+    }
+
+    class PagoTarjetaAdapter
+    class OrdenServiceAdapter
+
+    IOrdenService <|.. OrdenServiceAdapter
+    IOrdenService <|.. OrdenService  %% conceptual: OrdenService cumple el contrato (adaptador presenta)
+    MetodoPago <|.. PagoTarjetaAdapter
+    PagoTarjetaAdapter ..> PagoTarjetaCredito : adapta
+    OrdenService ..> ISistemaInventario : usa
+    OrdenService ..> MetodoPago : usa
+
+    %% Otros servicios y UI
+    class CatalogoService {
+      +agregarProducto(Producto)
+      +getProductos(): List~Producto~
+    }
+    class QuejaService {
+      +registrarQueja(cliente: Cliente, q: Queja)
+    }
+    class TeleventasGUI {
+      +main(args)
+      -IOrdenService ordenService
+      -IPago pago
+    }
+
+    %% Relaciones de uso
+    Cliente --> IOrdenService : usa
+    Cliente --> QuejaService : usa
+    Cliente --> CatalogoService : consulta
+    QuejaService --> GerenteRelaciones : notifica
+    TeleventasGUI --> IOrdenService : utiliza
+    TeleventasGUI --> MetodoPago : utiliza
+    TeleventasGUI --> CatalogoService : muestra
+
+    %% Notas finales
+    note left of TeleventasGUI
+      TeleventasGUI es la interfaz cliente/operador (demo Swing).
+      En una implementación web esto se mapearía a controladores/servlets.
+    end note

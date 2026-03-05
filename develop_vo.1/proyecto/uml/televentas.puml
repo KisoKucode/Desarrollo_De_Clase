@@ -1,0 +1,59 @@
+@startuml
+' Televentas - Diagrama de clases (interfaces + impls)
+package televentas.api {
+  interface IPago {
+    + procesarPago(monto: double)
+  }
+
+  interface IOrdenService {
+    + crearOrden(orden: modelos.OrdenCompra)
+    + confirmarOrden(codigo: String)
+    + cancelarOrden(codigo: String)
+  }
+}
+
+package pagos {
+  class PagoTarjetaCredito {
+    + procesarPago(monto: double)
+  }
+}
+
+package inventario {
+  interface ISistemaInventario {
+    + consultarStock(codigo: String): int
+    + actualizarStock(codigo: String, cantidad: int)
+  }
+
+  class InMemoryInventario {
+    + consultarStock(codigo: String): int
+    + actualizarStock(codigo: String, cantidad: int)
+  }
+}
+
+package servicios {
+  class OrdenService {
+    + procesarOrden(orden: modelos.OrdenCompra)
+  }
+}
+
+package televentas.impl {
+  class PagoTarjetaAdapter
+  class OrdenServiceAdapter
+}
+
+package televentas {
+  class TeleventasGUI
+}
+
+' Relaciones
+IPago <|.. PagoTarjetaAdapter
+IOrdenService <|.. OrdenServiceAdapter
+PagoTarjetaCredito ..|> IPago
+InMemoryInventario ..|> ISistemaInventario
+OrdenServiceAdapter ..> servicios.OrdenService
+PagoTarjetaAdapter ..> pagos.PagoTarjetaCredito
+TeleventasGUI --> IPago : usa
+TeleventasGUI --> IOrdenService : usa
+TeleventasGUI --> inventario.InMemoryInventario : usa
+
+@enduml

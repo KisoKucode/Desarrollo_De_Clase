@@ -15,3 +15,8 @@ src/inventario/InMemoryInventario.java
 src/servicios/OrdenService.java
 src/servicios/QuejaService.java
 src/servicios/CatalogoService.java
+src/televentas/api/IPago.java
+src/televentas/api/IOrdenService.java
+src/televentas/impl/PagoTarjetaAdapter.java
+src/televentas/impl/OrdenServiceAdapter.java
+src/televentas/TeleventasGUI.java

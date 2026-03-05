@@ -1,6 +1,8 @@
 package servicios;
 
 import inventario.ISistemaInventario;
+import java.util.ArrayList;
+import java.util.List;
 import modelos.ItemOrden;
 import modelos.OrdenCompra;
 
@@ -11,6 +13,7 @@ public class OrdenService {
     public OrdenService(ISistemaInventario inventario, pagos.MetodoPago metodoPago) {
         this.inventario = inventario;
         this.metodoPago = metodoPago;
+        this.ordenesConfirmadas = new ArrayList<>();
     }
 
     public void procesarOrden(OrdenCompra orden) {
@@ -35,8 +38,32 @@ public class OrdenService {
                 // no hay setter en OrdenCompra por UML, pero la clase tiene constructor con MetodoPago
             }
             orden.confirmar();
+            // almacenar orden confirmada para que agentes la consulten
+            ordenesConfirmadas.add(orden);
         } else {
             System.out.println("No se puede procesar la orden " + orden.getCodigo());
         }
+    }
+
+    private List<OrdenCompra> ordenesConfirmadas;
+
+    public List<OrdenCompra> obtenerOrdenesConfirmadas() {
+        return ordenesConfirmadas;
+    }
+
+    public void asignarTransportista(OrdenCompra orden, String transportista) {
+        orden.asignarTransportista(transportista);
+        System.out.println("Transportista " + transportista + " asignado a orden " + orden.getCodigo());
+    }
+
+    public void marcarEmpacado(OrdenCompra orden) {
+        orden.marcarEmpacado();
+        System.out.println("Orden " + orden.getCodigo() + " marcada como empacada.");
+    }
+
+    public void cancelarOrden(OrdenCompra orden) {
+        orden.cancelar();
+        ordenesConfirmadas.remove(orden);
+        System.out.println("Orden " + orden.getCodigo() + " cancelada desde servicio.");
     }
 }
