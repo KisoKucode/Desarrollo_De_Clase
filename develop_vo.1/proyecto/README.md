@@ -25,128 +25,120 @@ Diagrama de clases (Mermaid):
 
 ```mermaid
 classDiagram
-    %% Usuarios
     class Usuario {
-      <<Abstract>>
-      -String nombre
-      -String email
-      +autenticar()
+        <<abstract>>
+        -String nombre
+        -String email
+        +autenticar()
     }
     class Cliente
     class AgenteDeposito
     class GerenteRelaciones
+    
     Usuario <|-- Cliente
     Usuario <|-- AgenteDeposito
     Usuario <|-- GerenteRelaciones
 
-    %% Modelos
     class Producto {
-      -String codigo
-      -String descripcion
-      -double precio
+        -String codigo
+        -String descripcion
+        -double precio
     }
 
     class ItemOrden {
-      -int cantidad
-      -double precioUnitario
-      +getCantidad(): int
-      +getPrecioUnitario(): double
+        -int cantidad
+        -double precioUnitario
+        +getCantidad() int
+        +getPrecioUnitario() double
     }
 
     class OrdenCompra {
-      -String codigo
-      -Date fecha
-      -EstadoOrden estado
-      -boolean empacado
-      -String transportista
-      +calcularTotal(): double
-      +confirmar(): void
-      +cancelar(): void
-      +marcarEmpacado(): void
-      +asignarTransportista(String): void
+        -String codigo
+        -Date fecha
+        -EstadoOrden estado
+        -boolean empacado
+        -String transportista
+        +calcularTotal() double
+        +confirmar() void
+        +cancelar() void
+        +marcarEmpacado() void
+        +asignarTransportista(String) void
     }
 
     class Queja {
-      -String motivo
-      -Date fecha
+        -String motivo
+        -Date fecha
     }
 
     class EstadoOrden {
-      <<enumeration>>
-      PENDIENTE
-      CONFIRMADA
-      CANCELADA
+        <<enumeration>>
+        PENDIENTE
+        CONFIRMADA
+        CANCELADA
     }
 
-    %% Relacion de composición y asociaciones
+    class MetodoPago {
+        <<interface>>
+        +procesarPago(double monto)
+    }
+
+    class PagoTarjetaCredito {
+        +procesarPago(double monto)
+    }
+
+    class ISistemaInventario {
+        <<interface>>
+        +consultarStock(String codigo) int
+        +actualizarStock(String codigo, int cantidad)
+    }
+
+    class IOrdenService {
+        <<interface>>
+        +crearOrden(OrdenCompra orden)
+        +confirmarOrden(String codigo)
+        +cancelarOrden(String codigo)
+    }
+
+    class OrdenService {
+        -ISistemaInventario inventario
+        -MetodoPago metodoPago
+        +procesarOrden(OrdenCompra orden)
+        +obtenerOrdenesConfirmadas() List
+        +marcarEmpacado(OrdenCompra orden)
+        +asignarTransportista(OrdenCompra orden, String transportista)
+        +cancelarOrden(OrdenCompra orden)
+    }
+
+    class CatalogoService {
+        +agregarProducto(Producto p)
+        +getProductos() List
+    }
+
+    class QuejaService {
+        +registrarQueja(Cliente cliente, Queja q)
+    }
+
+    class TeleventasGUI {
+        -IOrdenService ordenService
+        +main(String[] args)
+    }
+
+    %% Relaciones
     OrdenCompra "1" *-- "1..*" ItemOrden : contiene
     ItemOrden "*" --> "1" Producto : refiere
     Cliente "1" --> "*" OrdenCompra
     Cliente "1" --> "*" Queja
     Queja --> GerenteRelaciones : remitida a
-
-    note right of OrdenCompra : El ticket/orden incluye items; al confirmar se actualiza stock, se puede marcar empacado y asignar transportista.
-
-    %% Pagos e inventario (interfaces y impls)
-    class MetodoPago {
-      <<interface>>
-      +procesarPago(monto: double)
-    }
-    class PagoTarjetaCredito {
-      +procesarPago(monto: double)
-    }
     MetodoPago <|.. PagoTarjetaCredito
-
-    class ISistemaInventario {
-      <<interface>>
-      +consultarStock(codigo: String): int
-      +actualizarStock(codigo: String, cantidad: int)
-    }
-    class InMemoryInventario
     ISistemaInventario <|.. InMemoryInventario
-
-    %% Servicios y adaptadores
-    class IOrdenService {
-      <<interface>>
-      +crearOrden(orden: OrdenCompra)
-      +confirmarOrden(codigo: String)
-      +cancelarOrden(codigo: String)
-    }
-    class OrdenService {
-      -ISistemaInventario inventario
-      -MetodoPago metodoPago
-      +procesarOrden(orden: OrdenCompra)
-      +obtenerOrdenesConfirmadas(): List~OrdenCompra~
-      +marcarEmpacado(orden: OrdenCompra)
-      +asignarTransportista(orden: OrdenCompra, transportista: String)
-      +cancelarOrden(orden: OrdenCompra)
-    }
-
-    class PagoTarjetaAdapter
-    class OrdenServiceAdapter
-
     IOrdenService <|.. OrdenServiceAdapter
     IOrdenService <|.. OrdenService
     MetodoPago <|.. PagoTarjetaAdapter
+    
     PagoTarjetaAdapter ..> PagoTarjetaCredito : adapta
     OrdenService ..> ISistemaInventario : usa
     OrdenService ..> MetodoPago : usa
-
-    %% Otros servicios y UI
-    class CatalogoService {
-      +agregarProducto(Producto)
-      +getProductos(): List~Producto~
-    }
-    class QuejaService {
-      +registrarQueja(cliente: Cliente, q: Queja)
-    }
-    class TeleventasGUI {
-      +main(args)
-      -IOrdenService ordenService
-      -IPago pago
-    }
-
-    %% Relaciones de uso
+    
     Cliente --> IOrdenService : usa
     Cliente --> QuejaService : usa
     Cliente --> CatalogoService : consulta
@@ -155,6 +147,5 @@ classDiagram
     TeleventasGUI --> MetodoPago : utiliza
     TeleventasGUI --> CatalogoService : muestra
 
-    %% Notas finales
-    note left of TeleventasGUI : TeleventasGUI es la interfaz cliente/operador (demo Swing). En una implementación web esto se mapearía a controladores/servlets.
-```
+    %% Notas
+    %% Nota: Mermaid requiere que las notas se definan de forma simple
