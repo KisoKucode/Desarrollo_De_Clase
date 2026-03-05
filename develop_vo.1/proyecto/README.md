@@ -86,10 +86,7 @@ classDiagram
     Cliente "1" --> "*" Queja
     Queja --> GerenteRelaciones : remitida a
 
-    note right of OrdenCompra
-      El ticket/orden incluye items; al confirmar se actualiza stock,
-      se puede marcar empacado y asignar transportista.
-    end note
+    note right of OrdenCompra : El ticket/orden incluye items; al confirmar se actualiza stock, se puede marcar empacado y asignar transportista.
 
     %% Pagos e inventario (interfaces y impls)
     class MetodoPago {
