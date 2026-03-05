@@ -22,6 +22,8 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 
 ### Arquitectura del Sistema TeleVentas
 
+Diagrama de clases (Mermaid):
+
 ```mermaid
 classDiagram
     %% Usuarios
