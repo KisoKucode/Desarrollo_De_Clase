@@ -33,10 +33,28 @@ class Cesion {
 }
 Obra "0..*" o-- "0..*" Cesion : cede
 
-interface CatalogoService
-interface RestauracionService
-interface CesionService
-interface AuthService
+class CatalogoService {
+  + agregarObra(o : Obra)
+  + listar() : List<Obra>
+  + listarPorSala(sala : String) : List<Obra>
+  + valorTotal() : double
+}
+
+class RestauracionService {
+  + iniciarRestauracion(o : Obra, tipo : String, inicio : Date)
+  + finalizarRestauracion(o : Obra, fin : Date)
+  + getRestauraciones(o : Obra) : List<Restauracion>
+  + obrasParaRestaurar(todas : List<Obra>) : List<Obra>
+}
+
+class CesionService {
+  + cederObra(o : Obra, c : Cesion)
+  + siguienteCesionPendiente(o : Obra) : Cesion
+}
+
+class AuthService {
+  + autenticar(user : String, pass : String) : String
+}
 
 abstract class Usuario
 class EncargadoCatalogo
@@ -52,5 +70,17 @@ Director --> CatalogoService : consulta
 EncargadoCatalogo --> CatalogoService : gestiona
 RestauradorJefe --> RestauracionService : gestiona
 Visitante --> CatalogoService : consulta por sala
+
+' GUI
+class MuseoApp {
+  + main(args)
+  - catalogo : CatalogoService
+  - restauracion : RestauracionService
+  - cesion : CesionService
+  - auth : AuthService
+}
+MuseoApp --> CatalogoService
+MuseoApp --> RestauracionService
+MuseoApp --> CesionService
 
 @enduml
