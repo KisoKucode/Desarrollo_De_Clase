@@ -1,18 +1,15 @@
 # Taller de Principios SOLID
-**Autor:** Daniel Alejandro Amado Poveda  
-**Carrera:** Ingeniería de Software  
-**Estado:** Junior Programmer
+**Autor:** Daniel Alejandro Amado Poveda
+**Carrera:** Ingeniería de Software
+
+Este repositorio contiene la resolución del taller de principios SOLID, aplicando refactorización de código para mejorar la mantenibilidad y escalabilidad del software.
 
 ---
 
 ## 1. Principio Abierto-Cerrado (OCP)
-
-### Diagnóstico
-[cite_start]La clase `Figuras` no cumple con el principio OCP[cite: 1, 31]. [cite_start]Está acoplada a tipos específicos como `Cuadrado` y `Circulo`, lo que obliga a modificar la clase cada vez que se añade una nueva figura[cite: 5, 8, 9].
+[cite_start]La clase `Figuras` original no cumple el OCP porque está acoplada a tipos específicos (`Cuadrado`, `Circulo`)[cite: 9, 10, 11]. [cite_start]Para agregar nuevas formas, se requeriría modificar la lógica interna[cite: 18, 31].
 
 ### Refactorización
-[cite_start]Se utiliza polimorfismo para que la clase sea abierta a la extensión pero cerrada a la modificación[cite: 32].
-
 ```java
 public abstract class Figura {
     public abstract void dibujar();
@@ -21,14 +18,14 @@ public abstract class Figura {
 public class Cuadrado extends Figura {
     @Override
     public void dibujar() {
-        System.out.println("Cuadrado");
+        System.out.println("Dibujando Cuadrado");
     }
 }
 
 public class Circulo extends Figura {
     @Override
     public void dibujar() {
-        System.out.println("Circulo");
+        System.out.println("Dibujando Circulo");
     }
 }
 
@@ -46,10 +43,7 @@ public class Figuras {
         }
     }
 }
-
-2. Principio de Sustitución de Liskov (LSP)DiagnósticoLa clase Configuracion incumple el LSP porque ConfiguracionHoraria lanza un error en el método save(), rompiendo la sustituibilidad de la interfaz RecursoPersistente.RefactorizaciónSegregación de capacidades de carga y guardado.
-
-public interface RecursoCargable {
+2. Principio de Sustitución de Liskov (LSP)La clase Configuracion viola el LSP debido a que ConfiguracionHoraria lanza una excepción (mensaje de error) en un método que debería ser funcional (save), rompiendo la jerarquía.RefactorizaciónSe segregan las interfaces para que los objetos solo implementen comportamientos que realmente soportan.Javapublic interface RecursoCargable {
     void load();
 }
 
@@ -62,10 +56,7 @@ public class ConfiguracionHoraria implements RecursoCargable {
         System.out.println("Configuracion horaria cargada");
     }
 }
-
-3. Principio de Responsabilidad Única (SRP)DiagnósticoLa clase Factura asume responsabilidades de cálculo de impuestos y deducciones que deberían estar aisladas.Refactorización y Cambios SolicitadosDeducción dinámica: Se ajusta el cálculo si el importe supera 10000.IVA: Ajuste del 16% al 18%.Exención: Código de factura 0 no aplica IVA.
-
-public class CalculadoraDeduccion {
+3. Principio de Responsabilidad Única (SRP)La clase Factura original tiene múltiples razones para cambiar (cambio de IVA, lógica de deducción, etc.).RefactorizaciónJavapublic class CalculadoraDeduccion {
     public float calcular(float importe, int porcentaje) {
         if (importe > 10000) {
             return (importe * porcentaje + 3) / 100;
@@ -82,12 +73,7 @@ public class CalculadoraIVA {
         return (float) (importe * 0.18);
     }
 }
-
-4. Principio de Inversión de Dependencia (DIP)DiagnósticoLa clase Factura depende de implementaciones concretas mediante el uso de new, violando el DIP.SoluciónInyectar abstracciones (interfaces) a través del constructor para desacoplar las clases.
-
-5. Principio de Segregación de Interfaces (ISP)DiagnósticoEmailSender y SMSSender dependen de la clase Contacto completa, accediendo a información que no necesitan para sus tareas específicas.RefactorizaciónCreación de interfaces específicas para cada servicio.
-
-public interface Emailable {
+4. Principio de Inversión de Dependencia (DIP)El código original depende de implementaciones concretas mediante el uso de new dentro de la clase Factura. Para cumplir el DIP, se deben inyectar las interfaces correspondientes a través del constructor.5. Principio de Segregación de Interfaces (ISP)Las clases EmailSender y SMSSender dependen de la clase Contacto completa, recibiendo datos que no utilizan.RefactorizaciónJavapublic interface Emailable {
     String getEmailAddress();
 }
 
